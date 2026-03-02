@@ -2,7 +2,21 @@
 <html>
 <head>
     <title>RiskLens AI Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https:@app.route("/dashboard")
+def dashboard():
+    data = []
+
+    try:
+        with open("risk_history.csv", newline="") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                data.append(row)
+    except FileNotFoundError:
+        data = []
+
+    latest = data[-1] if data else None
+
+    return render_template("dashboard.html", latest=latest, history=data)//cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -66,24 +80,30 @@
 <div class="cards">
     <div class="card">
         <h3>Base Solvency Ratio</h3>
-        <p>{{ latest.solvency_ratio }}</p>
+        <p>{{ latest.solvency_ratio if latest else "No Data" }}</p>
     </div>
 
     <div class="card">
         <h3>Stress 20% Ratio</h3>
-        <p>{{ latest.stressed_solvency_20 }}</p>
+        <p>{{ latest.stressed_solvency_20 if latest else "No Data" }}</p>
     </div>
 
     <div class="card">
         <h3>Expected Loss</h3>
-        <p>{{ latest.expected_loss }}</p>
+        <p>{{ latest.expected_loss if latest else "No Data" }}</p>
     </div>
 
     <div class="card">
         <h3>Capital Status</h3>
-        <p class="{{ 'status-stable' if 'Stable' in latest.status else 'status-risk' }}">
-            {{ latest.status }}
-        </p>
+
+        {% if latest %}
+            <p class="{{ 'status-stable' if 'Stable' in latest.status else 'status-risk' }}">
+                {{ latest.status }}
+            </p>
+        {% else %}
+            <p>No Data</p>
+        {% endif %}
+
     </div>
 </div>
 

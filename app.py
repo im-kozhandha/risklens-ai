@@ -12,10 +12,14 @@ def home():
 @app.route("/dashboard")
 def dashboard():
     data = []
-    with open("risk_history.csv", newline="") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            data.append(row)
+
+    try:
+        with open("risk_history.csv", newline="") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                data.append(row)
+    except FileNotFoundError:
+        data = []
 
     latest = data[-1] if data else None
 
