@@ -17,6 +17,10 @@ def dashboard():
         with open("risk_history.csv", newline="") as f:
             reader = csv.DictReader(f)
             for row in reader:
+                # convert strings to floats
+                row["solvency_ratio"] = float(row["solvency_ratio"])
+                row["stressed_solvency_20"] = float(row["stressed_solvency_20"])
+                row["expected_loss"] = float(row["expected_loss"])
                 data.append(row)
     except FileNotFoundError:
         data = []

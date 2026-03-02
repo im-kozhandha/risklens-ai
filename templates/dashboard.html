@@ -2,25 +2,12 @@
 <html>
 <head>
     <title>RiskLens AI Dashboard</title>
-    <script src="https:@app.route("/dashboard")
-def dashboard():
-    data = []
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    try:
-        with open("risk_history.csv", newline="") as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                data.append(row)
-    except FileNotFoundError:
-        data = []
-
-    latest = data[-1] if data else None
-
-    return render_template("dashboard.html", latest=latest, history=data)//cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #F5F7FA;
+            background-color: #F3F4F6;
             margin: 40px;
             color: #1F2933;
         }
@@ -41,7 +28,7 @@ def dashboard():
             padding: 25px;
             border-radius: 8px;
             flex: 1;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
         }
 
         .card h3 {
@@ -68,29 +55,40 @@ def dashboard():
             padding: 30px;
             border-radius: 8px;
             margin-bottom: 40px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
         }
-
     </style>
 </head>
+
 <body>
 
 <h1>RiskLens AI – Executive Risk Dashboard</h1>
 
 <div class="cards">
+
     <div class="card">
         <h3>Base Solvency Ratio</h3>
-        <p>{{ latest.solvency_ratio if latest else "No Data" }}</p>
+        <p class="{% if latest and latest.solvency_ratio < 1.5 %}status-risk{% else %}status-stable{% endif %}">
+            {{ "%.2f"|format(latest.solvency_ratio) if latest else "No Data" }}
+        </p>
     </div>
 
     <div class="card">
         <h3>Stress 20% Ratio</h3>
-        <p>{{ latest.stressed_solvency_20 if latest else "No Data" }}</p>
+        <p>
+            {{ "%.2f"|format(latest.stressed_solvency_20) if latest else "No Data" }}
+        </p>
     </div>
 
     <div class="card">
         <h3>Expected Loss</h3>
-        <p>{{ latest.expected_loss if latest else "No Data" }}</p>
+        <p>
+            {% if latest %}
+                ₹ {{ "%.2f"|format(latest.expected_loss / 1000000) }}M
+            {% else %}
+                No Data
+            {% endif %}
+        </p>
     </div>
 
     <div class="card">
@@ -105,6 +103,7 @@ def dashboard():
         {% endif %}
 
     </div>
+
 </div>
 
 <div class="section">
@@ -124,8 +123,23 @@ def dashboard():
                 label: 'Solvency Ratio',
                 data: ratios,
                 borderColor: '#1E3A8A',
-                fill: false
+                backgroundColor: 'rgba(30, 58, 138, 0.05)',
+                tension: 0.3,
+                fill: true,
+                borderWidth: 2
             }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: false
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
         }
     });
 </script>
