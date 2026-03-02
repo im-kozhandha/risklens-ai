@@ -1,0 +1,6 @@
+venv/
+.env
+__pycache__/
+*.pyc
+risk_agent_log.json
+risk_history.csv
