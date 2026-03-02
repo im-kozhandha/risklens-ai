@@ -9,6 +9,7 @@ app = Flask(__name__)
 def home():
     return {"message": "RiskLens AI is running."}
 
+@app.route("/dashboard")
 def dashboard():
     data = []
     with open("risk_history.csv", newline="") as f:
