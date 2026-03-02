@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RiskLens AI Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F5F7FA;
+            margin: 40px;
+            color: #1F2933;
+        }
+
+        h1 {
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .cards {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            flex: 1;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .card h3 {
+            font-size: 14px;
+            color: #6B7280;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .status-stable {
+            color: #166534;
+        }
+
+        .status-risk {
+            color: #7F1D1D;
+        }
+
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+    </style>
+</head>
+<body>
+
+<h1>RiskLens AI – Executive Risk Dashboard</h1>
+
+<div class="cards">
+    <div class="card">
+        <h3>Base Solvency Ratio</h3>
+        <p>{{ latest.solvency_ratio }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Stress 20% Ratio</h3>
+        <p>{{ latest.stressed_solvency_20 }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Expected Loss</h3>
+        <p>{{ latest.expected_loss }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Capital Status</h3>
+        <p class="{{ 'status-stable' if 'Stable' in latest.status else 'status-risk' }}">
+            {{ latest.status }}
+        </p>
+    </div>
+</div>
+
+<div class="section">
+    <h3>Solvency Trend</h3>
+    <canvas id="solvencyChart"></canvas>
+</div>
+
+<script>
+    const labels = {{ history|map(attribute='timestamp')|list|tojson }};
+    const ratios = {{ history|map(attribute='solvency_ratio')|list|tojson }};
+
+    new Chart(document.getElementById('solvencyChart'), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Solvency Ratio',
+                data: ratios,
+                borderColor: '#1E3A8A',
+                fill: false
+            }]
+        }
+    });
+</script>
+
+</body>
+</html>

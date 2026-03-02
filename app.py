@@ -1,11 +1,24 @@
 from flask import Flask, jsonify
 from risk_agent import run_agent
+from flask import render_template
+import csv
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
     return {"message": "RiskLens AI is running."}
+
+def dashboard():
+    data = []
+    with open("risk_history.csv", newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            data.append(row)
+
+    latest = data[-1] if data else None
+
+    return render_template("dashboard.html", latest=latest, history=data)
 
 @app.route("/run")
 def run():
